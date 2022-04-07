@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Simple Solar System</title>
+  <title>Simple Animation</title>
   <style>
     html,
     body {
@@ -16,9 +16,10 @@
 <body>
   <script src="js/three.js"></script>
   <script src="js/controls/TrackballControls.js"></script>
+  <script src="/js/loaders/GLTFLoader.js"></script>
   <script>
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    scene.background = new THREE.Color(0x7ec0ee);
 
     var aspect = window.innerWidth / window.innerHeight;
     var width = window.innerWidth;
@@ -78,7 +79,35 @@
     pivot.position.x = 250;
     moon.position.x = 80;
 
+    // --------------------------------------------------------------------------------------------------------------------
+    // Running Man
+    var mixer;
+
+    var loader = new THREE.GLTFLoader();
+
+    loader.load('models/RunningMan/RunningMan.gltf', function (gltf) {
+
+      scene.add(gltf.scene);
+      console.log('gltf', gltf);      // comment it out later
+      gltf.scene.position.set(0, -100, 150);
+      gltf.scene.scale.set(50, 50, 50);
+
+      mixer = new THREE.AnimationMixer(gltf.scene);   // create global mixer
+      var clips = gltf.animations;
+
+      var clip = THREE.AnimationClip.findByName(clips, "metarigAction");
+      var action = mixer.clipAction(clip);
+      action.play();
+
+    }, undefined, function (error) {
+
+      console.error(error);
+
+    }); // Running Man
+    // --------------------------------------------------------------------------------------------------------------------
+
     var au = 0;
+    var clock = new THREE.Clock();
     var render = function () {
       requestAnimationFrame(render);
       au += 0.01;
@@ -87,6 +116,8 @@
       pivot.rotation.y -= 0.01;
       earth.rotation.y += 0.02;
       controls.update();
+      var delta = clock.getDelta();
+      if (mixer) mixer.update(delta);
       renderer.render(scene, camera);
     };
 
