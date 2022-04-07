@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Simple Solar System</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="js/three.js"></script>
+  <script src="js/controls/TrackballControls.js"></script>
+  <script>
+    var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+
+    var aspect = window.innerWidth / window.innerHeight;
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000);
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    controls = new THREE.TrackballControls(camera);
+
+    // light
+    var light = new THREE.AmbientLight(0x404040);
+    var pointLight = new THREE.PointLight(0xe05702);
+
+    // set its position
+    pointLight.position.x = 0;
+    pointLight.position.y = 0;
+    pointLight.position.z = 0;
+
+    // add to the scene
+    scene.add(light);
+    scene.add(pointLight);
+
+    // texture
+    // instantiate a loader
+    var textLoader = new THREE.TextureLoader();
+    var sunTexture = textLoader.load("textures/texture_sun.jpg");
+    var earthTexture = textLoader.load("textures/1_earth_8k.jpg");
+    var moonTexture = textLoader.load("textures/moon-surface1k.jpg");
+
+    // sun
+    var geometry = new THREE.SphereGeometry(100, 32, 32);
+    //var material = new THREE.MeshNormalMaterial();
+    //var material = new THREE.MeshNormalMaterial({ wireframe: true });
+    var material = new THREE.MeshBasicMaterial({ map: sunTexture });
+    var sun = new THREE.Mesh(geometry, material);
+    scene.add(sun);
+    camera.position.z = 300;
+
+    // earth
+    var earth = new THREE.Mesh(new THREE.SphereGeometry(50, 32, 32), new THREE.MeshPhongMaterial({ map: earthTexture, shininess: 30 }));
+    //scene.add(earth);
+    //earth.position.x = 200;
+
+    // moon
+    var moon = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshLambertMaterial({ map: moonTexture }));
+    //scene.add(moon);
+    //moon.position.x = 400;
+
+    // Group earth and moon
+    var pivot = new THREE.Group();
+    pivot.add(earth);
+    pivot.add(moon);
+
+    scene.add(pivot);
+    pivot.position.x = 250;
+    moon.position.x = 80;
+
+    var au = 0;
+    var render = function () {
+      requestAnimationFrame(render);
+      au += 0.01;
+      pivot.position.x = 250 * Math.sin(au);
+      pivot.position.z = 250 * Math.cos(au);
+      pivot.rotation.y -= 0.01;
+      earth.rotation.y += 0.02;
+      controls.update();
+      renderer.render(scene, camera);
+    };
+
+    render();
+  </script>
+</body>
+
+</html>
