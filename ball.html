@@ -23,10 +23,10 @@
     renderer.setSize(window.innerWidth,window.innerHeight);
     renderer.setClearColor('#CCCCCC');
     renderer.shadowMapEnabled = true;
-    
+    //location
     var axes = new THREE.AxisHelper(4);
     scene.add(axes);
- 
+    //
     var planeGeometry = new THREE.PlaneGeometry(40,10,1,1);
     var planeMaterial = new THREE.MeshLambertMaterial({
         color:0x8DCC87
@@ -37,28 +37,55 @@
     plane.receiveShadow = true;
     scene.add(plane);
  
+    //cube1
+    var cubeGeometry = new THREE.BoxGeometry(4,4,4);
+    var cubeMaterial = new THREE.MeshLambertMaterial({
+        color:0x0000FF
+    });
+    var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
+    cube.position.set(-16,2,0);
+    cube.castShadow = true;
+    cube.receiveShadow = true;
+    scene.add(cube);
+    //cube2
+    var cubeGeometry = new THREE.BoxGeometry(4,4,4);
+    var cubeMaterial = new THREE.MeshLambertMaterial({
+        color:0x22FFDD
+    });
+    var cube2 = new THREE.Mesh(cubeGeometry,cubeMaterial);
+    cube2.position.set(16,2,0);
+    cube2.castShadow = true;
+    cube2.receiveShadow = true;
+    scene.add(cube2);
+    //ball
     var sphereGeometry = new THREE.SphereGeometry(2,20,20);
     var sphereMaterial = new THREE.MeshLambertMaterial({
         color:0xFF00F7
     });
     var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
-    sphere.position.set(-16,2,0);
+    sphere.position.set(16,6,0);
     sphere.castShadow = true;
     scene.add(sphere);
  
     var ambientLight = new THREE.AmbientLight('#212121');
     scene.add(ambientLight);
-    var SpotLight = new THREE.SpotLight(0xFFFFFF);
-    SpotLight.position.set(0,80,0);
-    SpotLight.castShadow = true;
-    scene.add(SpotLight);
+    var pointLight = new THREE.SpotLight(0xFFFFFF);
+    pointLight.position.set(0,80,0);
+    pointLight.castShadow = true;
+    scene.add(pointLight);
     document.body.appendChild(renderer.domElement);
     renderer.render(scene,camera);
-    var step = 0;
+    var step = 90;
+    var angle = 0;
     function run() {
-        step += 0.04;
-        sphere.position.x = 16*(Math.sin(step));
-        sphere.position.y = 2+(8*Math.abs(Math.cos(step)));
+        step += 1;
+        angle = step*Math.PI/180;
+        //camera.position.x = 16*(Math.sin(step));
+        sphere.position.x = 16*(Math.sin(angle));
+        sphere.position.y = 6+(8*Math.abs(Math.cos(angle)));
+        if(step > 2699){
+            step = 2699;
+        }
         console.log(sphere.position.y);
         requestAnimationFrame(run);
         renderer.render(scene,camera);
